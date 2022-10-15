@@ -1,7 +1,7 @@
 use actix_web::{get, post, web, App, HttpResponse, HttpServer, Responder};
 
 const IPV4: &str = "0.0.0.0";
-const PORT: u16 = 7780;
+const PORT: u16 = 8080;
 const HOST: (&str, u16) = (IPV4, PORT);
 
 #[get("/hello")]
