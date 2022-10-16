@@ -1,9 +1,19 @@
 # syntax=docker/dockerfile:1
 
-FROM rust:1.64 AS dev
-RUN cargo install cargo-watch
 
-FROM rust:1.64 AS base
+FROM rust:1.64-bullseye AS dev
+ARG UID=1000
+ARG GID=1000
+RUN apt update
+RUN groupadd -g "${GID}" rust && useradd -l -m -u "${UID}" -g "${GID}" -s /bin/bash rust
+RUN apt install gnupg2 -y
+RUN apt install sudo -y && echo "rust ALL=(ALL:ALL) NOPASSWD:ALL"
+USER rust
+ENV RUSTUP_HOME=/home/rust/rustup
+ENV CARGO_HOME=/home/rust/cargo
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+
+FROM rust:1.64-bullseye AS base
 WORKDIR /source
 
 FROM base AS release-deps
