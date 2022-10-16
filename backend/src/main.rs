@@ -1,8 +1,6 @@
 use actix_web::{get, post, web, App, HttpResponse, HttpServer, Responder};
 
 const IPV4: &str = "0.0.0.0";
-const PORT: u16 = 8080;
-const HOST: (&str, u16) = (IPV4, PORT);
 
 #[get("/hello")]
 async fn hello() -> impl Responder {
@@ -16,10 +14,16 @@ async fn echo(req_body: String) -> impl Responder {
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    println!("🚀 Serving on {IPV4}:{PORT}");
+    let port = std::env::var("PORT")
+        .unwrap_or("8080".to_owned())
+        .parse::<u16>()
+        .expect("env variable `PORT` should only be a number");
+    let host = (IPV4, port);
+
+    println!("🚀 Serving on http://{IPV4}:{port}/");
 
     HttpServer::new(|| App::new().service(web::scope("/api").service(echo).service(hello)))
-        .bind(HOST)?
+        .bind(host)?
         .run()
         .await
 }
