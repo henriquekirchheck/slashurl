@@ -4,14 +4,17 @@
 FROM rust:1.64-bullseye AS dev
 ARG UID=1000
 ARG GID=1000
-RUN apt update
-RUN groupadd -g "${GID}" rust && useradd -l -m -u "${UID}" -g "${GID}" -s /bin/bash rust
-RUN apt install gnupg2 -y
-RUN apt install sudo -y && echo "rust ALL=(ALL:ALL) NOPASSWD:ALL"
-USER rust
-ENV RUSTUP_HOME=/home/rust/rustup
-ENV CARGO_HOME=/home/rust/cargo
-RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+ARG USER=rust
+RUN apt update \
+  && apt install sudo -y \
+  && apt install gnupg2 -y
+RUN groupadd -g "${GID}" "${USER}" \
+  && useradd -l -m -u "${UID}" -g "${GID}" -s /bin/bash "${USER}" \
+  && echo "${USER} ALL=(ALL:ALL) NOPASSWD:ALL" >> /etc/sudoers
+USER ${USER}
+ENV RUSTUP_HOME=/home/${USER}/rustup
+ENV CARGO_HOME=/home/${USER}/cargo
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y && /home/${USER}/cargo/bin/cargo install cargo-watch
 
 FROM rust:1.64-bullseye AS base
 WORKDIR /source
