@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      target: dev
+      args:
+        - "UID=${UID:-1000}"
+        - "GID=${GID:-1000}"
+    environment:
+      - PORT=8080
+    volumes:
+      - .:/workspace
+    ports:
+      - 8080:8080
+    command: /bin/sh -c "while sleep 1000; do :; done"
