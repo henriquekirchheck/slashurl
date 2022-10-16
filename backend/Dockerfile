@@ -1,12 +1,10 @@
 # syntax=docker/dockerfile:1
 
-FROM rust:1.64 AS base
-WORKDIR /source
-
-FROM base AS development
+FROM rust:1.64 AS dev
 RUN cargo install cargo-watch
 
-CMD [ "cargo", "watch", "-x", "'run'" ]
+FROM rust:1.64 AS base
+WORKDIR /source
 
 FROM base AS release-deps
 COPY Cargo.toml .
