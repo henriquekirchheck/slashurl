@@ -27,7 +27,7 @@ RUN cargo build --release
 RUN rm -rf src/*
 
 FROM release-deps AS build
-COPY src src
+COPY . .
 RUN cargo install --path .
 
 FROM debian:bullseye-slim
