@@ -1,0 +1,14 @@
+{
+  "name": "slashurl-backend",
+  "dockerComposeFile": ["../../compose.yml", "../../compose.dev.yml"],
+  "service": "backend",
+  "workspaceFolder": "/workspace/backend",
+  "extensions": [
+    "bungcip.better-toml",
+    "vadimcn.vscode-lldb",
+    "serayuzgur.crates",
+    "christian-kohler.path-intellisense",
+    "rust-lang.rust-analyzer"
+  ],
+  "shutdownAction": "none"
+}
