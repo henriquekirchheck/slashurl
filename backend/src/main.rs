@@ -1,15 +1,10 @@
-use actix_web::{get, post, web, App, HttpResponse, HttpServer, Responder};
+use actix_web::{get, App, HttpResponse, HttpServer, Responder};
 
 const IPV4: &str = "0.0.0.0";
 
 #[get("/hello")]
 async fn hello() -> impl Responder {
     HttpResponse::Ok().body("Hello World!")
-}
-
-#[post("/echo")]
-async fn echo(req_body: String) -> impl Responder {
-    HttpResponse::Ok().body(req_body)
 }
 
 #[actix_web::main]
@@ -22,7 +17,7 @@ async fn main() -> std::io::Result<()> {
 
     println!("🚀 Serving on http://{IPV4}:{port}/");
 
-    HttpServer::new(|| App::new().service(web::scope("/api").service(echo).service(hello)))
+    HttpServer::new(|| App::new().service(hello))
         .bind(host)?
         .run()
         .await
