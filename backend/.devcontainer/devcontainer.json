@@ -10,7 +10,8 @@
     "christian-kohler.path-intellisense",
     "rust-lang.rust-analyzer",
     "mtxr.sqltools",
-    "mtxr.sqltools-driver-pg"
+    "mtxr.sqltools-driver-pg",
+    "humao.rest-client"
   ],
   "shutdownAction": "none"
 }
