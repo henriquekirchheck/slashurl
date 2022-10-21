@@ -1,3 +1,5 @@
+mod endpoints;
+
 use actix_web::{get, App, HttpResponse, HttpServer, Responder};
 
 const IPV4: &str = "0.0.0.0";
@@ -17,8 +19,12 @@ async fn main() -> std::io::Result<()> {
 
     println!("🚀 Serving on http://{IPV4}:{port}/");
 
-    HttpServer::new(|| App::new().service(hello))
-        .bind(host)?
-        .run()
-        .await
+    HttpServer::new(|| {
+        App::new()
+            .service(hello)
+            .service(endpoints::api::register_api_endpoints())
+    })
+    .bind(host)?
+    .run()
+    .await
 }

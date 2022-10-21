@@ -1,0 +1,20 @@
+#### Variables
+@apiurl = http://127.0.0.1:8080/api
+
+#### urls
+### get all short urls
+GET {{apiurl}}/urls HTTP/1.1
+
+### create a short url
+POST {{apiurl}}/urls HTTP/1.1
+Content-Type: application/json
+
+{
+  "full_url": "https://google.com"
+}
+
+### get a short url info
+GET {{apiurl}}/urls/Hello HTTP/1.1
+
+### delete a short url
+DELETE {{apiurl}}/urls/Hello HTTP/1.1
