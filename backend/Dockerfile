@@ -13,7 +13,8 @@ USER ${USER}
 ENV RUSTUP_HOME=/home/${USER}/rustup
 ENV CARGO_HOME=/home/${USER}/cargo
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y \
-  && /home/${USER}/cargo/bin/cargo install cargo-watch diesel_cli
+  && /home/${USER}/cargo/bin/cargo install cargo-watch \
+  && /home/${USER}/cargo/bin/cargo install diesel_cli --no-default-features --features "postgres"
 
 FROM rust:1.64-bullseye AS base
 RUN apt upgrade && apt install libpq-dev
