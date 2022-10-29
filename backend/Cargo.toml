@@ -1,16 +1,12 @@
 [package]
 name = "slashurl-backend"
-version = "0.4.0-dev"
+version = "0.5.0"
 edition = "2021"
 license = "GPL-3.0-only"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-actix = "0.13.0"
 actix-web = "4"
 serde = { version = "1.0.145", features = ["derive"] }
 serde_json = "1.0.87"
-diesel = { version = "2.0.2", features = ["chrono", "r2d2", "postgres", "serde_json"] }
-chrono = { version = "0.4.22", features = ["serde"] }
-diesel_migrations = "2.0.0"
