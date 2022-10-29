@@ -1211,7 +1211,7 @@ dependencies = [
 
 [[package]]
 name = "slashurl-backend"
-version = "0.3.0-dev"
+version = "0.4.0-dev"
 dependencies = [
  "actix",
  "actix-web",
