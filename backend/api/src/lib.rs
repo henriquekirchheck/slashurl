@@ -1,8 +1,7 @@
 use actix_web::{get, web::Json, App, HttpServer, Responder};
-use migration::{MigratorTrait, sea_orm::EntityTrait};
-use slashurl_core::sea_orm::{Database, ConnectOptions};
+use migration::MigratorTrait;
+use slashurl_core::sea_orm::{ConnectOptions, Database};
 use std::env;
-use entity::url::Entity as Url;
 
 #[get("/hello")]
 async fn hello_world() -> impl Responder {
@@ -22,15 +21,18 @@ async fn start() -> std::io::Result<()> {
 
         let mut opt = ConnectOptions::new(db_string);
 
-        opt
-        .max_connections(100)
-        .min_connections(5)
-        .sqlx_logging(true);
+        opt.max_connections(100)
+            .min_connections(5)
+            .sqlx_logging(true);
 
-        Database::connect(opt).await.expect("Failed to connect to database")
+        Database::connect(opt)
+            .await
+            .expect("Failed to connect to database")
     };
 
-    migration::Migrator::up(&db, None).await.expect("Failed to apply migrations");
+    migration::Migrator::up(&db, None)
+        .await
+        .expect("Failed to apply migrations");
 
     let url_info = {
         let host = env::var("HOST").unwrap_or("0.0.0.0".to_owned());
