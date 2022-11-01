@@ -2,5 +2,17 @@
   "workbench.colorCustomizations": {
     "statusBar.background": "#da9c00",
     "statusBar.foreground": "#000"
-  }
+  },
+  "sqltools.connections": [
+    {
+      "previewLimit": 50,
+      "server": "db",
+      "port": 5432,
+      "driver": "PostgreSQL",
+      "name": "Dev Connection",
+      "database": "slashurl",
+      "username": "app",
+      "password": "Password123"
+    }
+  ]
 }

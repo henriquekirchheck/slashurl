@@ -1,12 +1,15 @@
 [package]
 name = "slashurl-backend"
-version = "0.5.0"
+version = "0.6.0"
 edition = "2021"
 license = "GPL-3.0-only"
+authors = ["Henrique Kirch Heck <86362827+henriquekirchheck@users.noreply.github.com>"]
+publish = false
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
+[workspace]
+members = [".", "api", "core", "entity", "migration"]
+
 [dependencies]
-actix-web = "4"
-serde = { version = "1.0.145", features = ["derive"] }
-serde_json = "1.0.87"
+slashurl-api = { path = "./api" }
