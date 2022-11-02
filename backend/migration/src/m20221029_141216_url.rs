@@ -3,7 +3,6 @@ use sea_orm_migration::prelude::*;
 #[derive(Iden)]
 pub enum Url {
     Table,
-    Id,
     ShortUrl,
     FullUrl,
     CreatedAt,
@@ -22,17 +21,10 @@ impl MigrationTrait for Migration {
                     .table(Url::Table)
                     .if_not_exists()
                     .col(
-                        ColumnDef::new(Url::Id)
-                            .integer()
-                            .not_null()
-                            .auto_increment()
-                            .primary_key(),
-                    )
-                    .col(
                         ColumnDef::new(Url::ShortUrl)
                             .string()
                             .not_null()
-                            .unique_key(),
+                            .primary_key(),
                     )
                     .col(ColumnDef::new(Url::FullUrl).string().not_null())
                     .col(
