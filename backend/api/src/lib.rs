@@ -1,11 +1,22 @@
-use actix_web::{get, web::Json, App, HttpServer, Responder};
-use migration::MigratorTrait;
+use actix_web::{
+    get,
+    web::{self, Json},
+    App, HttpServer, Responder,
+};
+use migration::{sea_orm::DatabaseConnection, MigratorTrait};
 use slashurl_core::sea_orm::{ConnectOptions, Database};
 use std::env;
+
+mod api;
 
 #[get("/hello")]
 async fn hello_world() -> impl Responder {
     Json("Hello World!")
+}
+
+#[derive(Debug, Clone)]
+pub struct AppState {
+    db: DatabaseConnection,
 }
 
 #[actix_web::main]
@@ -15,22 +26,24 @@ async fn start() -> std::io::Result<()> {
         .with_test_writer()
         .init();
 
-    let db = {
-        let db_string =
-            env::var("DATABASE_URL").expect("`DATABASE_URL` environment variable was not provided");
+    let app_state = AppState {
+        db: {
+            let db_string = env::var("DATABASE_URL")
+                .expect("`DATABASE_URL` environment variable was not provided");
 
-        let mut opt = ConnectOptions::new(db_string);
+            let mut opt = ConnectOptions::new(db_string);
 
-        opt.max_connections(100)
-            .min_connections(5)
-            .sqlx_logging(true);
+            opt.max_connections(100)
+                .min_connections(5)
+                .sqlx_logging(true);
 
-        Database::connect(opt)
-            .await
-            .expect("Failed to connect to database")
+            Database::connect(opt)
+                .await
+                .expect("Failed to connect to database")
+        },
     };
 
-    migration::Migrator::up(&db, None)
+    migration::Migrator::up(&app_state.db, None)
         .await
         .expect("Failed to apply migrations");
 
@@ -46,7 +59,12 @@ async fn start() -> std::io::Result<()> {
         ((host, port), url)
     };
 
-    let server = HttpServer::new(move || App::new().service(hello_world));
+    let server = HttpServer::new(move || {
+        App::new()
+            .app_data(web::Data::new(app_state.clone()))
+            .service(hello_world)
+            .configure(api::config)
+    });
 
     println!("Running server on {}", url_info.1);
     server.bind(url_info.0)?.run().await

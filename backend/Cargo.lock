@@ -2006,6 +2006,7 @@ name = "slashurl-api"
 version = "0.1.0"
 dependencies = [
  "actix-web",
+ "derive_more",
  "entity",
  "migration",
  "serde",
