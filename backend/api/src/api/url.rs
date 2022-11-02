@@ -1,12 +1,15 @@
 use actix_web::{
     get,
     http::StatusCode,
+    post,
     web::{self, Json},
     Responder, ResponseError,
 };
 use derive_more::{Display, Error};
-use entity::url::Entity as url_entity;
-use migration::sea_orm::EntityTrait;
+use entity::url;
+use migration::sea_orm::{ActiveModelTrait, ActiveValue, EntityTrait};
+use nanoid::{alphabet::SAFE, nanoid};
+use serde::Deserialize;
 
 #[derive(Debug, Display, Error)]
 enum UrlError {
@@ -23,12 +26,14 @@ impl ResponseError for UrlError {
 }
 
 pub fn config(cfg: &mut web::ServiceConfig) {
-    cfg.service(get_all_urls).service(get_url_by_id);
+    cfg.service(get_all_urls)
+        .service(get_url_by_id)
+        .service(create_url);
 }
 
 #[get("/url")]
 async fn get_all_urls(app_data: web::Data<crate::AppState>) -> Result<impl Responder, UrlError> {
-    let urls = url_entity::find()
+    let urls = url::Entity::find()
         .all(&app_data.db)
         .await
         .map_err(|_| UrlError::DatabaseError)?;
@@ -41,10 +46,34 @@ async fn get_url_by_id(
     app_data: web::Data<crate::AppState>,
     path: web::Path<String>,
 ) -> Result<impl Responder, UrlError> {
-    let urls = url_entity::find_by_id(path.into_inner())
+    let urls = url::Entity::find_by_id(path.into_inner())
         .one(&app_data.db)
         .await
         .map_err(|_| UrlError::DatabaseError)?;
 
     Ok(Json(urls))
+}
+
+#[derive(Deserialize)]
+struct UrlInfo {
+    full_url: String,
+}
+
+#[post("/url")]
+async fn create_url(
+    app_data: web::Data<crate::AppState>,
+    body: web::Json<UrlInfo>,
+) -> Result<impl Responder, UrlError> {
+    let url_model = url::ActiveModel {
+        short_url: ActiveValue::Set(nanoid!(10, &SAFE)),
+        full_url: ActiveValue::Set(body.full_url.to_owned()),
+        ..Default::default()
+    };
+
+    let res = url_model
+        .insert(&app_data.db)
+        .await
+        .map_err(|_| UrlError::DatabaseError)?;
+
+    Ok(Json(res))
 }
