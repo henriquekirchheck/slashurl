@@ -8,6 +8,7 @@ use slashurl_core::sea_orm::{ConnectOptions, Database};
 use std::env;
 
 mod api;
+mod redirect;
 
 #[get("/hello")]
 async fn hello_world() -> impl Responder {
@@ -64,6 +65,7 @@ async fn start() -> std::io::Result<()> {
             .app_data(web::Data::new(app_state.clone()))
             .service(hello_world)
             .configure(api::config)
+            .service(redirect::url_redirect)
     });
 
     println!("Running server on {}", url_info.1);
