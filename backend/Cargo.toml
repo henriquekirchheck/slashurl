@@ -13,3 +13,4 @@ members = [".", "api", "core", "entity", "migration"]
 
 [dependencies]
 slashurl-api = { path = "./api" }
+dotenv = "0.15.0"
