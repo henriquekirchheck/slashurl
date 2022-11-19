@@ -14,5 +14,6 @@
       "username": "app",
       "password": "Password123"
     }
-  ]
+  ],
+  "terminal.integrated.defaultProfile.linux": "bash",
 }
