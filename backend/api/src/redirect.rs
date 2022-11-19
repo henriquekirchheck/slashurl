@@ -5,7 +5,10 @@ use actix_web::{
 };
 use derive_more::{Display, Error};
 use entity::url;
-use migration::sea_orm::{EntityTrait, QuerySelect};
+use migration::{
+    sea_orm::{ColumnTrait, EntityTrait, QueryFilter, QuerySelect},
+    Expr,
+};
 
 #[derive(Debug, Display, Error)]
 pub enum RedirectError {
@@ -30,13 +33,22 @@ pub async fn url_redirect(
     app_data: web::Data<crate::AppState>,
     path: web::Path<String>,
 ) -> Result<impl Responder, RedirectError> {
-    let url_option = url::Entity::find_by_id(path.into_inner())
+    let short_url_id = path.into_inner();
+
+    let url_option = url::Entity::find_by_id(short_url_id.clone())
         .column(url::Column::FullUrl)
         .one(&app_data.db)
         .await
         .map_err(|_| RedirectError::DatabaseError)?;
 
     if let Some(url) = url_option {
+        url::Entity::update_many()
+            .filter(url::Column::ShortUrl.eq(short_url_id.clone()))
+            .col_expr(url::Column::Views, Expr::col(url::Column::Views).add(1))
+            .exec(&app_data.db)
+            .await
+            .map_err(|_| RedirectError::DatabaseError)?;
+
         let mut response = HttpResponse::Ok();
         let full_url = url.full_url.to_owned();
 
