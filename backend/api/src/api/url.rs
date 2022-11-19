@@ -1,5 +1,5 @@
 use actix_web::{
-    delete, get,
+    get,
     http::StatusCode,
     post,
     web::{self, Json},
@@ -7,7 +7,7 @@ use actix_web::{
 };
 use derive_more::{Display, Error};
 use entity::url;
-use migration::sea_orm::{ActiveModelTrait, ActiveValue, EntityTrait, ModelTrait};
+use migration::sea_orm::{ActiveModelTrait, ActiveValue, EntityTrait};
 use nanoid::{alphabet::SAFE, nanoid};
 use serde::Deserialize;
 
@@ -28,8 +28,7 @@ impl ResponseError for UrlError {
 pub fn config(cfg: &mut web::ServiceConfig) {
     cfg.service(get_all_urls)
         .service(get_url_by_id)
-        .service(create_url)
-        .service(delete_url_by_id);
+        .service(create_url);
 }
 
 #[get("/url")]
@@ -66,7 +65,7 @@ async fn create_url(
     body: web::Json<UrlInfo>,
 ) -> Result<impl Responder, UrlError> {
     let url_model = url::ActiveModel {
-        short_url: ActiveValue::Set(nanoid!(10, &SAFE)),
+        short_url: ActiveValue::Set(nanoid!(12, &SAFE)),
         full_url: ActiveValue::Set(body.full_url.to_owned()),
         ..Default::default()
     };
@@ -77,23 +76,4 @@ async fn create_url(
         .map_err(|_| UrlError::DatabaseError)?;
 
     Ok(Json(res))
-}
-
-#[delete("/url/{short_url}")]
-async fn delete_url_by_id(
-    app_data: web::Data<crate::AppState>,
-    path: web::Path<String>,
-) -> Result<impl Responder, UrlError> {
-    let url_model = url::Entity::find_by_id(path.into_inner())
-        .one(&app_data.db)
-        .await
-        .map_err(|_| UrlError::DatabaseError)?;
-
-    if let Some(url) = url_model.clone() {
-        url.delete(&app_data.db)
-            .await
-            .map_err(|_| UrlError::DatabaseError)?;
-    }
-
-    Ok(Json(url_model))
 }
