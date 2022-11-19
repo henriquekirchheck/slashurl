@@ -8,10 +8,23 @@ services:
       - backend_net
     depends_on:
       - db
+    environment:
+      - PORT=80
+    env_file:
+      - ./.env
+    ports:
+      - "8080:80"
   db:
     image: postgres:alpine
     networks:
       - backend_net
+    env_file:
+      - ./.env
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+volumes:
+  db_data:
 
 networks:
   backend_net:
