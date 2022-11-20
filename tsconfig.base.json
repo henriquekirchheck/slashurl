@@ -1,0 +1,20 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "rootDir": ".",
+    "sourceMap": true,
+    "declaration": true,
+    "moduleResolution": "NodeNext",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "importHelpers": true,
+    "baseUrl": "/",
+    "allowJs": false,
+    "target": "ES2015",
+    "module": "ESNext",
+    "typeRoots": ["node_modules/@types"],
+    "lib": ["ES2017", "DOM"],
+    "paths": {
+    }
+  }
+}
