@@ -1,4 +1,8 @@
 [workspace]
 members = [
-    "app/backend"
+    "app/backend",
+    "app/backend/api",
+    "app/backend/core",
+    "app/backend/entity",
+    "app/backend/migration"
 ]

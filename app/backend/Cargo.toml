@@ -1,5 +1,5 @@
 [package]
-name = "slashurl-backend"
+name = "backend"
 version = "2.1.0"
 edition = "2021"
 license = "GPL-3.0-only"
@@ -8,9 +8,5 @@ publish = false
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
-[workspace]
-members = [".", "api", "core", "entity", "migration"]
-
 [dependencies]
-slashurl-api = { path = "./api" }
-dotenv = "0.15.0"
+api = { path = "./api" }

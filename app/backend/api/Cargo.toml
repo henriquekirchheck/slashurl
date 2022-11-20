@@ -1,5 +1,5 @@
 [package]
-name = "slashurl-api"
+name = "api"
 version = "0.1.0"
 edition = "2021"
 publish = false
@@ -10,7 +10,7 @@ publish = false
 actix-web = "4"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
-slashurl-core = { path = "../core" }
+orm-core = { path = "../core" }
 tracing-subscriber = "0.3.16"
 tracing = "0.1.37"
 entity = { path = "../entity" }

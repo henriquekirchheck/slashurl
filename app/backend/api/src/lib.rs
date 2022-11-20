@@ -4,7 +4,7 @@ use actix_web::{
     App, HttpServer, Responder,
 };
 use migration::{sea_orm::DatabaseConnection, MigratorTrait};
-use slashurl_core::sea_orm::{ConnectOptions, Database};
+use orm_core::sea_orm::{ConnectOptions, Database};
 use std::env;
 
 mod api;

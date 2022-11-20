@@ -1,6 +1,6 @@
 {
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "name": "slashurl-backend",
+  "name": "backend",
   "projectType": "application",
   "sourceRoot": "app/backend/src",
   "targets": {
@@ -25,6 +25,25 @@
         "fix": false,
         "failOnWarnings": true,
         "noDeps": true
+      }
+    },
+    "serve": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "cargo run --release",
+        "cwd": "app/backend"
+      }
+    },
+    "dev": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "app/backend",
+        "command": "cargo run"
+      },
+      "configurations": {
+        "serve": {
+          "command": "cargo watch -x 'run'"
+        }
       }
     }
   },
