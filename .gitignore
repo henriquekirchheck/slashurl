@@ -4,6 +4,7 @@
 dist
 tmp
 /out-tsc
+/target
 
 # dependencies
 node_modules
@@ -21,4 +22,3 @@ testem.log
 
 # env variables
 /.env
-/target
