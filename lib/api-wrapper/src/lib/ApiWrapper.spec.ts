@@ -34,4 +34,21 @@ describe("apiWrapper", () => {
 
     expect(catchFn).not.toHaveBeenCalled()
   })
+
+  it("should return error case", async () => {
+    const thenFn = jest.fn()
+    const catchFn = jest.fn()
+
+    const axiosError = new Error("test error")
+
+    mockAxios.request.mockRejectedValueOnce(axiosError)
+
+    await wrapper.helloWorld().then(thenFn).catch(catchFn)
+
+    expect(thenFn).toHaveBeenCalledWith<[ResultType<string>]>({
+      error: axiosError.message,
+    })
+
+    expect(catchFn).not.toHaveBeenCalled()
+  })
 })
