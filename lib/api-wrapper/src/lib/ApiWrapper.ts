@@ -45,8 +45,10 @@ export class SlashUrlApiWrapper {
     return this.#baseUrl
   }
 
-  #getError(error: unknown) {
-    return error instanceof Error ? { error: error } : { error: String(error) }
+  #getError<T>(error: unknown): ResultType<T> {
+    if (axios.isAxiosError(error) || error instanceof Error)
+      return { error: error.message }
+    return { error: String(error) }
   }
 
   async helloWorld(): Promise<ResultType<string>> {
@@ -61,7 +63,9 @@ export class SlashUrlApiWrapper {
     }
   }
 
-  async urlInfo(id?: string): Promise<ResultType<UrlModelType | UrlModelType[]>> {
+  async urlInfo(
+    id?: string
+  ): Promise<ResultType<UrlModelType | UrlModelType[]>> {
     try {
       if (id) {
         const config = this.#endpoints.get_url(id)
