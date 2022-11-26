@@ -16,6 +16,7 @@
     "lib": ["ES2017", "DOM"],
     "paths": {
       "@slashurl/api-wrapper": ["lib/api-wrapper/src/index.ts"]
-    }
+    },
+    "esModuleInterop": true
   }
 }

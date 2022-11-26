@@ -11,4 +11,6 @@ export default {
   },
   moduleFileExtensions: ["ts", "tsx", "js", "jsx"],
   coverageDirectory: "../../coverage/lib/api-wrapper",
+  automock: false,
+  resetMocks: false,
 }
