@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json.schemastore.org/swcrc",
+  "module": { "type": "es6" },
+  "jsc": {
+    "parser": {
+      "syntax": "typescript",
+      "dynamicImport": true,
+      "decorators": true,
+      "tsx": false
+    },
+    "target": "es2016",
+    "loose": true,
+    "externalHelpers": false
+  },
+  "minify": true
+}

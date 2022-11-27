@@ -13,5 +13,10 @@
       }
     }
   },
-  "plugins": ["@nxrs/cargo"]
+  "plugins": ["@nxrs/cargo"],
+  "targetDefaults": {
+    "test": {
+      "inputs": ["default", "^default", "{workspaceRoot}/jest.preset.js"]
+    }
+  }
 }
