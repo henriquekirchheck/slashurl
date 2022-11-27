@@ -7,7 +7,7 @@ export const user: CommandType = {
     .setDescription("Provides information about the user."),
   async execute(interaction: CommandInteraction) {
     await interaction.reply(
-      `This command was run by ${interaction.user.username}, who created a Discord account on ${interaction.user.createdAt}.`
+      `This command was run by ${interaction.user.username}, who created a Discord account on ${interaction.user.createdAt.toLocaleDateString()}.`
     )
   },
 }
