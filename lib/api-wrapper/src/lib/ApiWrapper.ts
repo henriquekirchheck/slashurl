@@ -1,6 +1,11 @@
 import axios, { AxiosRequestConfig } from "axios"
 
-export type ResultType<T> = { error?: Error | string; data?: T }
+export type ResponseType<T> = {
+  success: boolean
+  error?: Error
+  data?: T
+}
+
 export type UrlModelType = {
   short_url: string
   full_url: string
@@ -45,19 +50,23 @@ export class SlashUrlApiWrapper {
     return this.#baseUrl
   }
 
-  #getError<T>(error: unknown): ResultType<T> {
+  #getError<T>(error: unknown): ResponseType<T> {
     if (axios.isAxiosError(error) || error instanceof Error)
-      return { error: error.message }
-    return { error: String(error) }
+      return { success: false, error }
+    return { success: false, error: new Error(String(error)) }
   }
 
-  async helloWorld(): Promise<ResultType<string>> {
+  #getData<T>(data: T): ResponseType<T> {
+    return { success: true, data }
+  }
+
+  async helloWorld(): Promise<ResponseType<string>> {
     const config = this.#endpoints.hello()
     try {
       const data = await axios
         .request<string>({ ...config })
         .then((res) => res.data)
-      return { data }
+      return this.#getData(data)
     } catch (error) {
       return this.#getError(error)
     }
@@ -65,21 +74,21 @@ export class SlashUrlApiWrapper {
 
   async urlInfo(
     id?: string
-  ): Promise<ResultType<UrlModelType | UrlModelType[]>> {
+  ): Promise<ResponseType<UrlModelType | UrlModelType[]>> {
     try {
       if (id) {
         const config = this.#endpoints.get_url(id)
         const data = await axios
           .request<UrlModelType>({ ...config })
           .then((res) => res.data)
-        return { data }
+        return this.#getData(data)
       }
 
       const config = this.#endpoints.list_urls()
       const data = await axios
         .request<UrlModelType[]>({ ...config })
         .then((res) => res.data)
-      return { data }
+      return this.#getData(data)
     } catch (error) {
       return this.#getError(error)
     }
