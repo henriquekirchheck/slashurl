@@ -13,6 +13,11 @@ export type UrlModelType = {
   views: number
 }
 
+export type CreateUrlResponseType = {
+  info: UrlModelType
+  url: string
+}
+
 export class SlashUrlApiWrapper {
   #baseUrl: string
   #endpoints = {
@@ -38,6 +43,18 @@ export class SlashUrlApiWrapper {
       method: "get",
       headers: {
         Accept: "application/json",
+      },
+    }),
+    create_url: (full_url: string): AxiosRequestConfig => ({
+      baseURL: this.#baseUrl,
+      url: "/api/url",
+      method: "post",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      responseType: "json",
+      data: {
+        full_url,
       },
     }),
   }
@@ -89,6 +106,21 @@ export class SlashUrlApiWrapper {
         .request<UrlModelType[]>({ ...config })
         .then((res) => res.data)
       return this.#getData(data)
+    } catch (error) {
+      return this.#getError(error)
+    }
+  }
+
+  async createUrl(fullUrl: URL): Promise<ResponseType<CreateUrlResponseType>> {
+    const config = this.#endpoints.create_url(fullUrl.toString())
+    try {
+      const data = await axios
+        .request<UrlModelType>({ ...config })
+        .then((res) => res.data)
+      return this.#getData({
+        info: data,
+        url: new URL(`/${data.short_url}`, this.#baseUrl).toString(),
+      })
     } catch (error) {
       return this.#getError(error)
     }

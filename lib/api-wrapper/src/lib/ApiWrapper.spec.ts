@@ -1,11 +1,31 @@
 import axios from "axios"
-import { ResponseType, SlashUrlApiWrapper, UrlModelType } from "./ApiWrapper"
+import { URL } from "url"
+import {
+  CreateUrlResponseType,
+  ResponseType,
+  SlashUrlApiWrapper,
+  UrlModelType,
+} from "./ApiWrapper"
 
 jest.mock("axios")
 const mockAxios = axios as jest.Mocked<typeof axios>
 
 describe("apiWrapper", () => {
   const baseUrl = "http://127.0.0.1:8080/"
+  const urlModels: UrlModelType[] = [
+    {
+      short_url: "abcdefgh",
+      full_url: "https://kernel.org/",
+      created_at: new Date(),
+      views: 70 - 1,
+    },
+    {
+      short_url: "goooogle",
+      full_url: "https://google.com/",
+      created_at: new Date(),
+      views: 70 - 1,
+    },
+  ]
   const wrapper = new SlashUrlApiWrapper(baseUrl)
 
   beforeEach(() => {
@@ -55,20 +75,7 @@ describe("apiWrapper", () => {
     const thenFn = jest.fn()
     const catchFn = jest.fn()
 
-    const serverResponse: UrlModelType[] = [
-      {
-        short_url: "abcdefgh",
-        full_url: "https://kernel.org/",
-        created_at: new Date(),
-        views: 70 - 1,
-      },
-      {
-        short_url: "goooogle",
-        full_url: "https://google.com/",
-        created_at: new Date(),
-        views: 70 - 1,
-      },
-    ]
+    const serverResponse = urlModels
 
     mockAxios.request.mockResolvedValueOnce({
       data: serverResponse,
@@ -87,12 +94,7 @@ describe("apiWrapper", () => {
     const thenFn = jest.fn()
     const catchFn = jest.fn()
 
-    const serverResponse: UrlModelType = {
-      short_url: "abcdefgh",
-      full_url: "https://kernel.org/",
-      created_at: new Date(),
-      views: 70 - 1,
-    }
+    const serverResponse = urlModels[0]
 
     mockAxios.request.mockResolvedValueOnce({
       data: serverResponse,
@@ -103,6 +105,32 @@ describe("apiWrapper", () => {
     expect(thenFn).toHaveBeenCalledWith<[ResponseType<UrlModelType>]>({
       success: true,
       data: serverResponse,
+    })
+
+    expect(catchFn).not.toHaveBeenCalled()
+  })
+  it("should get shortened url back", async () => {
+    const thenFn = jest.fn()
+    const catchFn = jest.fn()
+
+    const url = new URL("https://kernel.org/")
+    const serverResponse = urlModels[0]
+
+    mockAxios.request.mockResolvedValueOnce({
+      data: serverResponse,
+    })
+
+    await wrapper.createUrl(url).then(thenFn).catch(catchFn)
+
+    expect(thenFn).toHaveBeenCalledWith<[ResponseType<CreateUrlResponseType>]>({
+      success: true,
+      data: {
+        info: serverResponse,
+        url: new URL(
+          `/${serverResponse.short_url}`,
+          wrapper.baseUrl
+        ).toString(),
+      },
     })
 
     expect(catchFn).not.toHaveBeenCalled()
