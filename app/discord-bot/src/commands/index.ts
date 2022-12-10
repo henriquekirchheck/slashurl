@@ -1,12 +1,15 @@
-import { CommandInteraction, SlashCommandBuilder } from "discord.js"
-import { ping } from "./ping"
-import { server } from "./server"
-import { user } from "./user"
+import {
+  CommandInteraction,
+  SlashCommandBuilder,
+  SlashCommandSubcommandsOnlyBuilder,
+} from "discord.js"
+import { url } from "./url"
 
-export { ping, server, user }
-export const commandList = [ping, server, user]
-
+export const commandList = [url]
+export { url }
 export type CommandType = {
-  data: SlashCommandBuilder
+  data:
+    | Omit<SlashCommandBuilder, "addSubcommandGroup" | "addSubcommand">
+    | SlashCommandSubcommandsOnlyBuilder
   execute: (interaction: CommandInteraction) => Promise<void>
 }
