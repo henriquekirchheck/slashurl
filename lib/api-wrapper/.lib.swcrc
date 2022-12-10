@@ -1,16 +1,24 @@
 {
-  "$schema": "https://json.schemastore.org/swcrc",
-  "module": { "type": "es6" },
   "jsc": {
+    "target": "es2017",
     "parser": {
       "syntax": "typescript",
-      "dynamicImport": true,
       "decorators": true,
-      "tsx": false
+      "dynamicImport": true
     },
-    "target": "es2016",
-    "loose": false,
-    "externalHelpers": false
+    "transform": {
+      "decoratorMetadata": true,
+      "legacyDecorator": true
+    },
+    "keepClassNames": true,
+    "externalHelpers": true,
+    "loose": true
   },
-  "minify": false
+  "module": {
+    "type": "commonjs",
+    "strict": true,
+    "noInterop": true
+  },
+  "sourceMaps": true,
+  "exclude": ["jest.config.ts",".*\\.spec.tsx?$",".*\\.test.tsx?$","./src/jest-setup.ts$","./**/jest-setup.ts$",".*.js$"]
 }

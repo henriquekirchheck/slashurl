@@ -1,10 +1,15 @@
 import axios, { AxiosRequestConfig } from "axios"
 
-export type ResponseType<T> = {
-  success: boolean
-  error?: Error
-  data?: T
+type ResponseSuccessType<T> = {
+  success: true
+  data: T
 }
+type ResponseErrorType = {
+  success: false
+  error: Error
+}
+
+export type ResponseType<T> = ResponseSuccessType<T> | ResponseErrorType
 
 export type UrlModelType = {
   short_url: string
