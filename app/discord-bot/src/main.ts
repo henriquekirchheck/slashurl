@@ -4,8 +4,8 @@ import { Client } from "./utils/client"
 import { registerSlashCommands } from "./utils/registerSlashCommands"
 
 const env = {
-  token: process.env.DISCORD_BOT_TOKEN,
-  clientId: process.env.DISCORD_CLIENT_ID,
+  token: process.env["DISCORD_BOT_TOKEN"],
+  clientId: process.env["DISCORD_CLIENT_ID"],
 }
 
 const client = new Client({ intents: [GatewayIntentBits.Guilds] })

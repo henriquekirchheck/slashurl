@@ -1,5 +1,7 @@
 import {
+  ChatInputCommandInteraction,
   CommandInteraction,
+  ContextMenuCommandInteraction,
   SlashCommandBuilder,
   SlashCommandSubcommandsOnlyBuilder,
 } from "discord.js"
@@ -11,5 +13,10 @@ export type CommandType = {
   data:
     | Omit<SlashCommandBuilder, "addSubcommandGroup" | "addSubcommand">
     | SlashCommandSubcommandsOnlyBuilder
-  execute: (interaction: CommandInteraction) => Promise<void>
+  execute: (
+    interaction:
+      | CommandInteraction
+      | ChatInputCommandInteraction
+      | ContextMenuCommandInteraction
+  ) => Promise<void>
 }
