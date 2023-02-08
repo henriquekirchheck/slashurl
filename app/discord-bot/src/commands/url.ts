@@ -61,7 +61,7 @@ export const url: CommandType = {
 
         const shortUrl = await urlApiWrapper.createUrl(new URL(fullUrl))
 
-        if (!shortUrl.success) {
+        if (shortUrl.success === false) {
           await interaction.editReply({
             content: "There was a error in the backend, try again later",
           })
@@ -125,7 +125,7 @@ export const url: CommandType = {
             { name: "ShortURL ID", value: urlInfo.data.short_url },
             { name: "Full URL", value: urlInfo.data.full_url },
             {
-              name: "Creation Date (UTC)",
+              name: "Creation Date",
               value: time(urlInfo.data.created_at, "F"),
             },
             { name: "Total Views", value: `${urlInfo.data.views}` }
