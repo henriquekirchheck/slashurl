@@ -32,7 +32,7 @@ export type CreateUrlResponseType = {
 
 export class SlashUrlApiWrapper {
   #baseUrl: string
-  #endpoints = {
+  private endpointsConstructor = {
     hello: (): AxiosRequestConfig => ({
       baseURL: this.#baseUrl,
       url: "/hello",
@@ -69,7 +69,7 @@ export class SlashUrlApiWrapper {
         full_url,
       },
     }),
-  }
+  } as const
 
   constructor(baseUrl: string) {
     this.#baseUrl = baseUrl
@@ -89,8 +89,12 @@ export class SlashUrlApiWrapper {
     return { success: true, data }
   }
 
+  public getAxiosConfigConstructor<T extends keyof typeof this.endpointsConstructor>(endpoint: T): (typeof this.endpointsConstructor)[T]{
+    return this.endpointsConstructor[endpoint]
+  }
+
   async helloWorld(): Promise<ResponseType<string>> {
-    const config = this.#endpoints.hello()
+    const config = this.endpointsConstructor.hello()
     try {
       const data = await axios
         .request<string>({ ...config })
@@ -106,7 +110,7 @@ export class SlashUrlApiWrapper {
   ): Promise<ResponseType<UrlModelType | UrlModelType[] | null>> {
     try {
       if (id) {
-        const config = this.#endpoints.get_url(id)
+        const config = this.endpointsConstructor.get_url(id)
         const data = await axios
           .request<UrlModelResponseType | null>({ ...config })
           .then((res) => res.data)
@@ -120,7 +124,7 @@ export class SlashUrlApiWrapper {
         )
       }
 
-      const config = this.#endpoints.list_urls()
+      const config = this.endpointsConstructor.list_urls()
       const data = await axios
         .request<UrlModelResponseType[]>({ ...config })
         .then((res) => res.data)
@@ -136,7 +140,7 @@ export class SlashUrlApiWrapper {
   }
 
   async createUrl(fullUrl: URL): Promise<ResponseType<CreateUrlResponseType>> {
-    const config = this.#endpoints.create_url(fullUrl.toString())
+    const config = this.endpointsConstructor.create_url(fullUrl.toString())
     try {
       const data = await axios
         .request<UrlModelResponseType>({ ...config })
