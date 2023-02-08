@@ -1,9 +1,21 @@
 import axios, { AxiosRequestConfig } from "axios"
 
-export type ResponseType<T> = {
-  success: boolean
-  error?: Error
-  data?: T
+type ResponseSuccessType<T> = {
+  success: true
+  data: T
+}
+type ResponseErrorType = {
+  success: false
+  error: Error
+}
+
+export type ResponseType<T> = ResponseSuccessType<T> | ResponseErrorType
+
+export type UrlModelResponseType = {
+  short_url: string
+  full_url: string
+  created_at: string
+  views: number
 }
 
 export type UrlModelType = {
@@ -91,21 +103,33 @@ export class SlashUrlApiWrapper {
 
   async urlInfo(
     id?: string
-  ): Promise<ResponseType<UrlModelType | UrlModelType[]>> {
+  ): Promise<ResponseType<UrlModelType | UrlModelType[] | null>> {
     try {
       if (id) {
         const config = this.#endpoints.get_url(id)
         const data = await axios
-          .request<UrlModelType>({ ...config })
+          .request<UrlModelResponseType | null>({ ...config })
           .then((res) => res.data)
-        return this.#getData(data)
+        return this.#getData(
+          data
+            ? {
+                ...data,
+                created_at: new Date(data.created_at),
+              }
+            : null
+        )
       }
 
       const config = this.#endpoints.list_urls()
       const data = await axios
-        .request<UrlModelType[]>({ ...config })
+        .request<UrlModelResponseType[]>({ ...config })
         .then((res) => res.data)
-      return this.#getData(data)
+      return this.#getData(
+        data.map((data) => ({
+          ...data,
+          created_at: new Date(data.created_at),
+        }))
+      )
     } catch (error) {
       return this.#getError(error)
     }
@@ -115,10 +139,10 @@ export class SlashUrlApiWrapper {
     const config = this.#endpoints.create_url(fullUrl.toString())
     try {
       const data = await axios
-        .request<UrlModelType>({ ...config })
+        .request<UrlModelResponseType>({ ...config })
         .then((res) => res.data)
       return this.#getData({
-        info: data,
+        info: { ...data, created_at: new Date(data.created_at) },
         url: new URL(`/${data.short_url}`, this.#baseUrl).toString(),
       })
     } catch (error) {

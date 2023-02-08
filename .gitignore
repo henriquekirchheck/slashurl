@@ -21,4 +21,4 @@ testem.log
 /typings
 
 # env variables
-/.env
+.env
