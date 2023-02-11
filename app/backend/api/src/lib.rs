@@ -1,3 +1,4 @@
+use actix_cors::Cors;
 use actix_web::{
     get,
     web::{self, Json},
@@ -61,7 +62,12 @@ async fn start() -> std::io::Result<()> {
     };
 
     let server = HttpServer::new(move || {
+        let cors = Cors::default().allowed_origin(
+            &env::var("CORS_WEBSITE").unwrap_or("http://localhost:4200".to_owned()),
+        ).allow_any_header().allow_any_method();
+
         App::new()
+            .wrap(cors)
             .app_data(web::Data::new(app_state.clone()))
             .service(hello_world)
             .configure(api::config)
