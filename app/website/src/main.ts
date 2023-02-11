@@ -1,7 +1,7 @@
-import App from "./App.svelte"
+import Root from "./Root.svelte"
 
-const app = new App({
+const root = new Root({
   target: document.getElementById("app") as HTMLElement,
 })
 
-export default app
+export default root

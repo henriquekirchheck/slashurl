@@ -22,7 +22,7 @@
     "sourceMap": true,
     "forceConsistentCasingInFileNames": true
   },
-  "include": ["src"],
+  "include": ["src", "vite.config.ts"],
   "references": [
     {
       "path": "./tsconfig.app.json"
