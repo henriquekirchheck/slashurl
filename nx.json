@@ -13,6 +13,11 @@
       }
     }
   },
+  "pluginsConfig": {
+    "@nrwl/js": {
+      "analyzeSourceFiles": true
+    }
+  },
   "targetDefaults": {
     "lint": {
       "inputs": ["default", "{workspaceRoot}/.eslintrc.json"]
@@ -37,10 +42,18 @@
     "sharedGlobals": []
   },
   "plugins": ["@nxrs/cargo"],
-  "pluginsConfig": {
-    "@nrwl/js": {
-      "analyzeSourceFiles": true
+  "defaultProject": "discord-bot",
+  "generators": {
+    "@nrwl/web:application": {
+      "style": "css",
+      "linter": "eslint",
+      "unitTestRunner": "vitest",
+      "e2eTestRunner": "none"
+    },
+    "@nrwl/web:library": {
+      "style": "css",
+      "linter": "eslint",
+      "unitTestRunner": "vitest"
     }
-  },
-  "defaultProject": "discord-bot"
+  }
 }

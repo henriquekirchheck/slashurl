@@ -1,0 +1,95 @@
+{
+  "name": "website",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "sourceRoot": "app/website/src",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@nrwl/vite:build",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "outputPath": "dist/app/website"
+      },
+      "configurations": {
+        "development": {
+          "mode": "development"
+        },
+        "production": {
+          "mode": "production"
+        }
+      }
+    },
+    "serve": {
+      "executor": "@nrwl/vite:dev-server",
+      "defaultConfiguration": "production",
+      "options": {
+        "buildTarget": "website:build"
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "website:build:development",
+          "hmr": true
+        },
+        "production": {
+          "buildTarget": "website:build:production",
+          "hmr": false
+        }
+      }
+    },
+    "dev": {
+      "executor": "@nrwl/vite:dev-server",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "website:build"
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "website:build:development",
+          "hmr": true
+        },
+        "production": {
+          "buildTarget": "website:build:production",
+          "hmr": false
+        }
+      }
+    },
+    "preview": {
+      "executor": "@nrwl/vite:preview-server",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "website:build"
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "website:build:development"
+        },
+        "production": {
+          "buildTarget": "website:build:production"
+        }
+      }
+    },
+    "test": {
+      "executor": "@nrwl/vite:test",
+      "outputs": ["coverage/app/website"],
+      "options": {
+        "passWithNoTests": true,
+        "reportsDirectory": "../../coverage/app/website"
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["app/website/**/*.ts"]
+      }
+    },
+    "check": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "svelte-check --tsconfig ./tsconfig.json"
+      }
+    }
+  }
+}
