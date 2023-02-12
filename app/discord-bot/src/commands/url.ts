@@ -61,7 +61,7 @@ export const url: CommandType = {
 
         const shortUrl = await urlApiWrapper.createUrl(new URL(fullUrl))
 
-        if (shortUrl.success === false) {
+        if (shortUrl.ok === false) {
           await interaction.editReply({
             content: "There was a error in the backend, try again later",
           })
@@ -94,7 +94,7 @@ export const url: CommandType = {
 
         const urlInfo = await urlApiWrapper.urlInfo(shortId)
 
-        if (!urlInfo.success) {
+        if (!urlInfo.ok) {
           await interaction.editReply({
             content: "There was a error in the backend, try again later",
           })
