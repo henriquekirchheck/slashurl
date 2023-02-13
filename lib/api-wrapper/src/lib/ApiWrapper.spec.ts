@@ -1,9 +1,16 @@
 import fetchMock from "jest-fetch-mock"
 import {
-  changeDateISOStringToDate,
   SlashUrlApiWrapper,
-  UrlModelType,
+  type UrlModelDateType,
+  type UrlModelType,
 } from "./ApiWrapper"
+
+function changeDateISOStringToDate(data: UrlModelType): UrlModelDateType {
+  return {
+    ...data,
+    created_at: new Date(data.created_at),
+  }
+}
 
 describe("apiWrapper", () => {
   const baseUrl = "http://127.0.0.1:8080/"

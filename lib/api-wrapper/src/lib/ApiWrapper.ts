@@ -23,10 +23,12 @@ export type CreateUrlResponseType = {
   url: string
 }
 
-export const changeDateISOStringToDate = (data: UrlModelType) => ({
-  ...data,
-  created_at: new Date(data.created_at),
-})
+function changeDateISOStringToDate(data: UrlModelType): UrlModelDateType {
+  return {
+    ...data,
+    created_at: new Date(data.created_at),
+  }
+}
 
 type FetchConfigType = readonly [input: URL, init: RequestInit]
 
@@ -54,7 +56,7 @@ const fetchApiConstructor = {
         },
       },
     ] satisfies FetchConfigType,
-    validator: z.array(UrlModel).nullable(),
+    validator: z.array(UrlModel),
   }),
 
   get_url: (apiBaseUrl: URL | string, pathParam: string) => ({
@@ -79,30 +81,30 @@ const fetchApiConstructor = {
           "Content-Type": "application/json",
           Accept: "application/json",
         },
-        body: JSON.stringify({full_url}),
+        body: JSON.stringify({ full_url }),
       },
     ] satisfies FetchConfigType,
     validator: UrlModel,
   }),
 } as const
 
-async function getReturn<V extends ZodType, T>(
-  {
-    fetch,
-    validator,
-  }: {
-    fetch: Promise<Response>
-    validator: V
-  },
-  modifyResultCallback: (data: z.infer<V>) => T = (data) => data
-): Promise<Result<T, Error>> {
+async function getReturn<T>(fetch: Promise<T>): Promise<Result<T, Error>> {
   try {
-    const data = await fetch.then((res) => res.json())
-    return Ok(modifyResultCallback(validator.parse(data)))
+    return Ok(await fetch)
   } catch (error) {
     if (error instanceof Error) return Err(error)
     return Err(new Error(String(error)))
   }
+}
+
+async function parseJsonWithValidador<V extends ZodType>({
+  fetch,
+  validator,
+}: {
+  fetch: Promise<Response>
+  validator: V
+}): Promise<z.infer<V>> {
+  return fetch.then((res) => res.json()).then(validator.parse)
 }
 
 export class SlashUrlApiWrapper {
@@ -116,21 +118,31 @@ export class SlashUrlApiWrapper {
     return this.#baseUrl
   }
 
-  public helloPromise() {
+  #helloModel() {
     const hello = fetchApiConstructor.hello(this.#baseUrl)
     return { fetch: fetchData(...hello.config), validator: hello.validator }
   }
 
-  public async helloWorld() {
-    return getReturn(this.helloPromise())
+  public helloFetch() {
+    return parseJsonWithValidador(this.#helloModel())
   }
 
-  public getUrlInfoPromise(id: string) {
+  public helloWorld() {
+    return getReturn(this.helloFetch())
+  }
+
+  #getUrlInfoModel(id: string) {
     const urlInfo = fetchApiConstructor.get_url(this.#baseUrl, id)
     return { fetch: fetchData(...urlInfo.config), validator: urlInfo.validator }
   }
 
-  public listUrlsInfoPromise() {
+  public getUrlInfoFetch(id: string) {
+    return parseJsonWithValidador(this.#getUrlInfoModel(id)).then(
+      changeDateISOStringToDate
+    )
+  }
+
+  #listUrlsInfoModel() {
     const urlsInfo = fetchApiConstructor.list_urls(this.#baseUrl)
     return {
       fetch: fetchData(...urlsInfo.config),
@@ -138,34 +150,38 @@ export class SlashUrlApiWrapper {
     }
   }
 
-  public async urlInfo(
-    id?: string
-  ): Promise<Result<UrlModelDateType | UrlModelDateType[] | null, Error>> {
-    if (id) {
-      return getReturn(
-        this.getUrlInfoPromise(id),
-        changeDateISOStringToDate
-      )
-    }
-    return getReturn(this.listUrlsInfoPromise(), (data) =>
-      data ? data.map(changeDateISOStringToDate) : null
+  public listUrlsInfoFetch() {
+    return parseJsonWithValidador(this.#listUrlsInfoModel()).then((data) =>
+      data.map(changeDateISOStringToDate)
     )
   }
 
-  public createUrlPromise(full_url: string) {
+  public urlInfo(
+    id?: string
+  ): Promise<Result<UrlModelDateType | UrlModelDateType[], Error>> {
+    if (id) {
+      return getReturn(this.getUrlInfoFetch(id))
+    }
+    return getReturn(this.listUrlsInfoFetch())
+  }
+
+  #createUrlModel(full_url: string) {
     const urlInfo = fetchApiConstructor.create_url(this.#baseUrl, full_url)
     return { fetch: fetchData(...urlInfo.config), validator: urlInfo.validator }
   }
 
-  public async createUrl(
+  public createUrlFetch(full_url: string): Promise<CreateUrlResponseType> {
+    return parseJsonWithValidador(this.#createUrlModel(full_url))
+      .then(changeDateISOStringToDate)
+      .then((data) => ({
+        info: data,
+        url: new URL(`/${data.short_url}`, this.#baseUrl).toString(),
+      }))
+  }
+
+  public createUrl(
     fullUrl: URL | string
   ): Promise<Result<CreateUrlResponseType, Error>> {
-    return getReturn(
-      this.createUrlPromise(fullUrl.toString()),
-      (data) => ({
-        info: changeDateISOStringToDate(data),
-        url: new URL(`/${data.short_url}`, this.#baseUrl).toString(),
-      })
-    )
+    return getReturn(this.createUrlFetch(fullUrl.toString()))
   }
 }
