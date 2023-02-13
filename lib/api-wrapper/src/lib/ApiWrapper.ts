@@ -1,4 +1,3 @@
-import { URL } from "url"
 import { z, ZodType } from "zod"
 import { fetchData } from "./fetch"
 import { Err, Ok, Result } from "./result"
