@@ -3,7 +3,6 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "app/discord-bot/src",
   "projectType": "application",
-  "implicitDependencies": ["backend"],
   "targets": {
     "build": {
       "executor": "@nrwl/webpack:webpack",
