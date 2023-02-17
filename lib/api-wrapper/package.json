@@ -1,6 +1,6 @@
 {
   "name": "@slashurl/api-wrapper",
-  "version": "4.0.1",
+  "version": "5.0.0",
   "type": "commonjs",
   "dependencies": {
     "zod": "^3.20.6"
