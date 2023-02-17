@@ -1,27 +1,30 @@
 <script lang="ts">
-  import { createQuery } from "@tanstack/svelte-query"
-  import { urlApiWrapper } from "./utils/apiWrapper"
+  import DisplayCreatedUrlInfo from "./lib/DisplayCreatedUrlInfo.svelte"
 
-  const shortUrls = createQuery({
-    queryKey: ["todos"],
-    queryFn: urlApiWrapper.getListUrlsInfoFetch()
-  })
+  import { createMutation } from "@tanstack/svelte-query"
+  import { urlApiWrapper } from "./utils/apiWrapper"
+  const createUrlMutation = createMutation(["createUrl"], (full_url: string) =>
+    urlApiWrapper.getCreateUrlFetch(full_url)()
+  )
+
+  let fullUrl: string
+
+  function submitCreateUrl() {
+    $createUrlMutation.mutate(fullUrl)
+  }
+
+  $: lastCreateUrlInfo = $createUrlMutation.data
 </script>
 
-<h1>Hello World!</h1>
 <div>
-{#if $shortUrls.isLoading}
-  <p>Loading</p>
-{:else if $shortUrls.isError}
-  <p>Error: {$shortUrls.error}</p>
-{:else if $shortUrls.isSuccess}
-  {#each $shortUrls.data as shortUrl}
-    <section>
-      <p>{shortUrl.short_url}</p>
-      <p>{shortUrl.full_url}</p>
-      <p>{shortUrl.created_at}</p>
-      <p>{shortUrl.views}</p>
-    </section>
-  {/each}
-{/if}
+  <form on:submit|preventDefault|stopPropagation={submitCreateUrl}>
+    <label for="full-url">URL to be shortened</label>
+    <input type="url" name="Full URL" id="full-url" bind:value={fullUrl} />
+    <button type="submit"> Create ShortURL </button>
+  </form>
+  {#if lastCreateUrlInfo}
+    <div>
+      <DisplayCreatedUrlInfo createUrlResponse={lastCreateUrlInfo} />
+    </div>
+  {/if}
 </div>
